@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Hunt Confidence Tracker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎯 Job Confidence Tracker</h1>
+      <p class="subtitle">Anonymous P2P company reports</p>
+    </header>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="peer-status" id="peerStatus">⏳ Connecting...</span>
+      <span class="reports-today" id="reportsToday">Reports today: 0/10</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="list">📋 Companies</button>
+      <button class="tab" data-tab="report">📝 Report</button>
+      <button class="tab" data-tab="stats">📊 Stats</button>
+    </div>
+
+    <!-- Company List Tab -->
+    <div class="tab-content active" id="tab-list">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search companies...">
+      </div>
+      <div class="sort-options">
+        <select id="sortSelect">
+          <option value="confidence-desc">Worst First (Low Confidence)</option>
+          <option value="confidence-asc">Best First (High Confidence)</option>
+          <option value="reports-desc">Most Reports</option>
+          <option value="recent">Recently Added</option>
+        </select>
+      </div>
+      <div class="company-list" id="companyList">
+        <div class="loading">Loading companies...</div>
+      </div>
+    </div>
+
+    <!-- Report Tab -->
+    <div class="tab-content" id="tab-report">
+      <div class="report-form">
+        <div class="form-group">
+          <label for="companyName">Company Name</label>
+          <input type="text" id="companyName" placeholder="Enter company name..." autocomplete="off">
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+
+        <div class="form-group">
+          <label>What happened?</label>
+          <div class="experience-options" id="experienceOptions">
+            <!-- Negative experiences (decrease confidence) -->
+            <label class="experience-option negative" data-impact="-15">
+              <input type="radio" name="experience" value="ghosted_application">
+              <span class="option-content">
+                <span class="icon">👻</span>
+                <span class="label">Long Running Ad, Nobody Hired</span>
+                <span class="impact">-15</span>
+              </span>
+            </label>
+            
+            <label class="experience-option negative" data-impact="-10">
+              <input type="radio" name="experience" value="ghosted_contact">
+              <span class="option-content">
+                <span class="icon">📞</span>
+                <span class="label">Contacted Then Ghosted</span>
+                <span class="impact">-10</span>
+              </span>
+            </label>
+
+            <label class="experience-option negative" data-impact="-12">
+              <input type="radio" name="experience" value="ghosted_interview">
+              <span class="option-content">
+                <span class="icon">🗣️</span>
+                <span class="label">Interviewed Then Ghosted</span>
+                <span class="impact">-12</span>
+              </span>
+            </label>
+
+            <label class="experience-option neutral" data-impact="-3">
+              <input type="radio" name="experience" value="interviewed_declined">
+              <span class="option-content">
+                <span class="icon">❌</span>
+                <span class="label">Interviewed, Declined</span>
+                <span class="impact">-3</span>
+              </span>
+            </label>
+
+            <label class="experience-option negative" data-impact="-8">
+              <input type="radio" name="experience" value="excessive_rounds">
+              <span class="option-content">
+                <span class="icon">🔄</span>
+                <span class="label">Excessive Interview Rounds</span>
+                <span class="impact">-8</span>
+              </span>
+            </label>
+
+            <label class="experience-option negative" data-impact="-20">
+              <input type="radio" name="experience" value="no_show">
+              <span class="option-content">
+                <span class="icon">🚫</span>
+                <span class="label">Interview No-Show</span>
+                <span class="impact">-20</span>
+              </span>
+            </label>
+
+            <!-- Positive experiences (increase confidence) -->
+            <label class="experience-option positive" data-impact="+5">
+              <input type="radio" name="experience" value="good_communication">
+              <span class="option-content">
+                <span class="icon">💬</span>
+                <span class="label">Good Communication</span>
+                <span class="impact">+5</span>
+              </span>
+            </label>
+
+            <label class="experience-option positive" data-impact="+10">
+              <input type="radio" name="experience" value="respectful_process">
+              <span class="option-content">
+                <span class="icon">🤝</span>
+                <span class="label">Respectful Process</span>
+                <span class="impact">+10</span>
+              </span>
+            </label>
+
+            <label class="experience-option positive" data-impact="+15">
+              <input type="radio" name="experience" value="hired">
+              <span class="option-content">
+                <span class="icon">🎉</span>
+                <span class="label">Got Hired!</span>
+                <span class="impact">+15</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <button class="submit-btn" id="submitReport" disabled>
+          <span class="btn-text">Submit Report</span>
+          <span class="btn-loading">Computing proof...</span>
+        </button>
+        
+        <p class="disclaimer">
+          Your report is anonymous. A proof-of-work is computed to prevent spam.
+        </p>
+      </div>
+    </div>
+
+    <!-- Stats Tab -->
+    <div class="tab-content" id="tab-stats">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalCompanies">0</div>
+          <div class="stat-label">Companies Tracked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalReports">0</div>
+          <div class="stat-label">Total Reports</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="activePeers">0</div>
+          <div class="stat-label">Active Peers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="yourReports">0</div>
+          <div class="stat-label">Your Reports</div>
+        </div>
+      </div>
+
+      <div class="worst-offenders">
+        <h3>⚠️ Worst Offenders</h3>
+        <div id="worstList"></div>
+      </div>
+
+      <div class="your-identity">
+        <h3>🔑 Your Anonymous ID</h3>
+        <code id="peerId">Loading...</code>
+        <p class="id-note">This is your pseudonymous identity. It's stored locally and used to sign your reports.</p>
+      </div>
+    </div>
+
+    <footer>
+      <span>v1.0.0</span>
+      <span>•</span>
+      <span id="lastSync">Never synced</span>
+    </footer>
+  </div>
+
+  <script src="lib/gun.min.js"></script>
+  <script src="lib/sea.js"></script>
+  <script src="crypto.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
