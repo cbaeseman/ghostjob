@@ -31,6 +31,17 @@ let user;
 let keypair;
 let companies = {};
 let myReports = {};
+let cacheTimer = null;
+
+/**
+ * Debounced save of companies to local storage for content script access
+ */
+function scheduleCompanyCache() {
+  clearTimeout(cacheTimer);
+  cacheTimer = setTimeout(() => {
+    chrome.storage.local.set({ companiesCache: companies });
+  }, 1000);
+}
 
 /**
  * Initialize the extension
@@ -150,6 +161,7 @@ function subscribeToData() {
           ...data,
           id: companyId,
         };
+        scheduleCompanyCache();
         updateCompanyList();
         updateStats();
       }
