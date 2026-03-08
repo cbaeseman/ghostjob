@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ghost Job Confidence Tracker",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "P2P anonymous company confidence tracker for job seekers",
   "permissions": [
     "storage",
